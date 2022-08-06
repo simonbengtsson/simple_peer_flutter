@@ -1,26 +1,32 @@
 name: simple_peer
 description: Simple WebRTC.
 version: 0.0.1
+repository: https://github.com/simonbengtsson/simple_peer_flutter
 
 environment:
   sdk: ">=2.17.6 <3.0.0"
-  flutter: ">=1.17.0"
+  flutter: ">=2.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_webrtc: ^0.9.1
-  integration_test: ^0.8.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  integration_test: ^0.8.1
 
 flutter:
   plugin:
     platforms:
       android:
+        package: io.flown.simple_peer
+        pluginClass: Peer
       ios:
+        pluginClass: Peer
       macos:
+        pluginClass: Peer
       windows:
+        pluginClass: Peer
