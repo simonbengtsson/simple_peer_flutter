@@ -7,20 +7,28 @@ class VersionEditor {
 
   List<int> bumpPatchVersion() {
     var oldVersion = readCurrentVersion();
-    var newVersion = [oldVersion[0], oldVersion[1], oldVersion[2] + 1];
+    var newVersionParts = [oldVersion[0], oldVersion[1], oldVersion[2] + 1];
 
+    var newVersion = newVersionParts.join('.');
     _replaceLine(pubspecFile, 'version: ${oldVersion.join('.')}',
-        'version: ${newVersion.join('.')}');
+        'version: $newVersion');
+
+    var changelogFile = File('CHANGELOG.md');
+    var changelog = changelogFile.readAsStringSync();
+    if (!changelog.contains('#$newVersion')) {
+      changelog = '#$newVersion\n$changelog';
+      changelogFile.writeAsStringSync(changelog);
+    }
 
     runLocalCommand('git reset');
-    runLocalCommand('git add ${pubspecFile.path}');
-    runLocalCommand('git commit -m v${newVersion.join('.')}');
-    runLocalCommand('git tag v${newVersion.join('.')}');
+    runLocalCommand('git add ${pubspecFile.path} ${changelogFile.path}');
+    runLocalCommand('git commit -m v${newVersion}');
+    runLocalCommand('git tag v${newVersion}');
     runLocalCommand('git push && git push --tags');
 
-    print(newVersion.join('.'));
+    print(newVersion);
 
-    return newVersion;
+    return newVersionParts;
   }
 
   List<int> readCurrentVersion() {
