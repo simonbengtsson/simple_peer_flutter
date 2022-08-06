@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'command_runner.dart';
 import 'version_editor.dart';
 
 main(List<String> args) async {

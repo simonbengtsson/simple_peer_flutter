@@ -9,17 +9,14 @@ class VersionEditor {
     var oldVersion = readCurrentVersion();
     var newVersion = [oldVersion[0], oldVersion[1], oldVersion[2] + 1];
 
-    _replaceLine(
-        pubspecFile,
-        'version: ${oldVersion.join('.')}+${oldVersion[2]}',
-        'version: ${newVersion.join('.')}+${newVersion[2]}');
+    _replaceLine(pubspecFile, 'version: ${oldVersion.join('.')}',
+        'version: ${newVersion.join('.')}');
 
     runLocalCommand('git reset');
     runLocalCommand('git add ${pubspecFile.path}');
     runLocalCommand('git commit -m v${newVersion.join('.')}');
     runLocalCommand('git tag v${newVersion.join('.')}');
     runLocalCommand('git push && git push --tags');
-    runLocalCommand('dart pub publish');
 
     print(newVersion.join('.'));
 
@@ -31,8 +28,7 @@ class VersionEditor {
     var lines = content.split('\n');
     var index = lines.indexWhere((element) => element.startsWith('version:'));
     String versionLine = lines[index];
-    var versionPart =
-        versionLine.substring('version: '.length, versionLine.indexOf('+'));
+    var versionPart = versionLine.substring('version: '.length);
     var parts = versionPart.split('.').map((it) => int.parse(it));
     return parts.toList();
   }

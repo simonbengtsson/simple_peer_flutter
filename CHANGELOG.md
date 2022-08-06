@@ -1,6 +1,10 @@
-## Unreleased (main channel)
+## 0.0.3
 
-- None
+- Internal
+
+## 0.0.2
+
+- Internal
 
 ## 0.0.1
 
