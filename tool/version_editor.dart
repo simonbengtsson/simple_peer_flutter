@@ -15,8 +15,8 @@ class VersionEditor {
 
     var changelogFile = File('CHANGELOG.md');
     var changelog = changelogFile.readAsStringSync();
-    if (!changelog.contains('#$newVersion')) {
-      changelog = '#$newVersion\n$changelog';
+    if (!changelog.contains('## $newVersion')) {
+      changelog = '## $newVersion\n$changelog';
       changelogFile.writeAsStringSync(changelog);
     }
 
