@@ -1,10 +1,10 @@
 Simple WebRTC. Wraps [flutter_webrtc](https://github.com/flutter-webrtc/flutter-webrtc) similar to [simple-peer](https://github.com/feross/simple-peer)
 
-Important: Although the example works it should be noted that
+IMPORTANT: Although the example works this plugin is just a proof of concept that only support data channels and does not support specifying any options
 
 ## Getting started
 
-See more information.
+For now, see more information on how to in either flutter_webrtc or simple-peer.
 
 ## Usage
 
