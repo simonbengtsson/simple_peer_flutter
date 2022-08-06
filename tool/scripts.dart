@@ -7,7 +7,7 @@ main(List<String> args) async {
   var script = args.isEmpty ? null : args.first;
   if (script == 'release') {
     VersionEditor().bumpPatchVersion();
-    //runLocalCommand('dart pub publish');
+    runLocalCommand('dart pub publish -f');
   } else {
     print('Invalid script: $script');
   }
