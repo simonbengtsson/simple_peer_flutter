@@ -26,9 +26,8 @@ peer2.onData = (data) async {
   print("Got data from peer1: $data");
 };
 
-await Future.wait([
-  peer1.connect(),
-  peer2.connect(),
-]);
+peer2.connect();
+await peer1.connect();
+
 await peer1.send('hello!');
 ```
