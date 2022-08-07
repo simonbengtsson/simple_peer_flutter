@@ -19,14 +19,3 @@ dev_dependencies:
   integration_test: ^0.8.1
 
 flutter:
-  plugin:
-    platforms:
-      android:
-        package: io.flown.simple_peer
-        pluginClass: Peer
-      ios:
-        pluginClass: Peer
-      macos:
-        pluginClass: Peer
-      windows:
-        pluginClass: Peer
