@@ -28,8 +28,12 @@ class Peer {
   final Map<String, dynamic>? _config;
   final RTCDataChannelInit? _dataChannelConfig;
 
-  late RTCPeerConnection _connection;
   late RTCDataChannel _dataChannel;
+
+  /// Peer connection from flutter_webrtc used for transfers.
+  /// For advanced use cases some of the methods and properties of this object
+  /// is useful. It is only available after connect() has been called.
+  late RTCPeerConnection connection;
 
   /// Called when the peer wants to send signaling data to the remote peer.
   ///
@@ -71,16 +75,16 @@ class Peer {
 
     var config = _config ?? googleStunConfig;
 
-    _connection = await createPeerConnection(config, loopbackConstraints);
+    connection = await createPeerConnection(config, loopbackConstraints);
 
-    _connection.onIceCandidate = (candidate) async {
+    connection.onIceCandidate = (candidate) async {
       _signaling('iceCandidate', candidate.toMap());
     };
 
     var dcInit = _dataChannelConfig ?? RTCDataChannelInit();
     if (_initiator) {
       _dataChannel =
-          await _connection.createDataChannel('simple_peer_dc', dcInit);
+          await connection.createDataChannel('simple_peer_dc', dcInit);
       _dataChannel.onDataChannelState = (state) async {
         if (state == RTCDataChannelState.RTCDataChannelOpen) {
           completer.complete();
@@ -95,13 +99,13 @@ class Peer {
         _print('Message received');
       };
 
-      var offer = await _connection.createOffer();
-      await _connection.setLocalDescription(offer);
+      var offer = await connection.createOffer();
+      await connection.setLocalDescription(offer);
       _signaling('offer', offer.toMap());
     } else {
       if (dcInit.negotiated) {
         _dataChannel =
-            await _connection.createDataChannel('simple_peer_dc', dcInit);
+            await connection.createDataChannel('simple_peer_dc', dcInit);
         _dataChannel.onDataChannelState = (state) async {
           if (state == RTCDataChannelState.RTCDataChannelOpen) {
             completer.complete();
@@ -116,7 +120,7 @@ class Peer {
           _print('Message received');
         };
       } else {
-        _connection.onDataChannel = (channel) {
+        connection.onDataChannel = (channel) {
           _dataChannel = channel;
           completer.complete();
           channel.onMessage = (message) {
@@ -173,11 +177,11 @@ class Peer {
       var sdp = messageData['sdp'];
       var type = messageData['type'];
       var description = RTCSessionDescription(sdp, type);
-      _connection.setRemoteDescription(description);
+      connection.setRemoteDescription(description);
       _print('Remote description set');
       if (messageType == 'offer') {
-        var answer = await _connection.createAnswer();
-        await _connection.setLocalDescription(answer);
+        var answer = await connection.createAnswer();
+        await connection.setLocalDescription(answer);
         _signaling('answer', answer.toMap());
       }
     } else if (messageType == 'iceCandidate') {
@@ -185,7 +189,7 @@ class Peer {
       var sdpMid = messageData['sdpMid'];
       var sdpMLineIndex = messageData['sdpMLineIndex'];
       var iceCandidate = RTCIceCandidate(candidate, sdpMid, sdpMLineIndex);
-      await _connection.addCandidate(iceCandidate);
+      await connection.addCandidate(iceCandidate);
       var type = candidate?.split(' ')[7];
       _print('Ice candidate $type added');
     }
