@@ -16,7 +16,7 @@ final loopbackConstraints = <String, dynamic>{
   ],
 };
 
-var activeConfig = <String, dynamic>{
+var googleStunConfig = <String, dynamic>{
   'iceServers': [
     {'url': 'stun:stun.l.google.com:19302'},
   ],
@@ -25,6 +25,8 @@ var activeConfig = <String, dynamic>{
 class Peer {
   final bool _initiator;
   final bool _verbose;
+  final Map<String, dynamic>? _config;
+
   late RTCPeerConnection _connection;
   late RTCDataChannel _dataChannel;
 
@@ -45,9 +47,14 @@ class Peer {
   /// Creates a new Peer
   ///
   /// Use [initiator] to specify if this is the peer that should initiate
-  /// the connection.
-  Peer({initiator = false, verbose = false})
+  /// the connection. For the webrtc [config] the default is to use publicly
+  /// available stun server config is used. Although this works during
+  /// development it could get taken down at any moment and does not support
+  /// the turn protocol. If transfer is not working you can turn on logging
+  /// with the [verbose] option.
+  Peer({initiator = false, verbose = false, Map<String, dynamic>? config})
       : _initiator = initiator,
+        _config = config,
         _verbose = verbose {
     _print('Peer created');
   }
@@ -56,7 +63,9 @@ class Peer {
   Future connect() async {
     var completer = Completer();
 
-    _connection = await createPeerConnection(activeConfig, loopbackConstraints);
+    var config = _config ?? googleStunConfig;
+
+    _connection = await createPeerConnection(config, loopbackConstraints);
 
     _connection.onIceCandidate = (candidate) async {
       _signaling('iceCandidate', candidate.toMap());
