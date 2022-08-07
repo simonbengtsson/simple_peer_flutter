@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 final loopbackConstraints = <String, dynamic>{
@@ -23,6 +24,7 @@ var activeConfig = <String, dynamic>{
 
 class Peer {
   final bool _initiator;
+  final bool _verbose;
   late RTCPeerConnection _connection;
   late RTCDataChannel _dataChannel;
 
@@ -44,7 +46,11 @@ class Peer {
   ///
   /// Use [initiator] to specify if this is the peer that should initiate
   /// the connection.
-  Peer({initiator = false}) : _initiator = initiator;
+  Peer({initiator = false, verbose = false})
+      : _initiator = initiator,
+        _verbose = verbose {
+    _print('Peer created');
+  }
 
   /// Call to start connection to remote peer.
   Future connect() async {
@@ -53,7 +59,6 @@ class Peer {
     _connection = await createPeerConnection(activeConfig, loopbackConstraints);
 
     _connection.onIceCandidate = (candidate) async {
-      await Future.delayed(const Duration(seconds: 1));
       _signaling('iceCandidate', candidate.toMap());
     };
 
@@ -72,6 +77,7 @@ class Peer {
         } else {
           onTextData?.call(message.text);
         }
+        _print('Message received ');
       };
 
       var offer = await _connection.createOffer();
@@ -92,6 +98,13 @@ class Peer {
     }
 
     await completer.future;
+
+    // If signaling is really quick the data channel is sometimes reported as
+    // ready before the remote peer data channel is ready. This could lead to
+    // the initial messages to be dropped.
+    await Future.delayed(const Duration(milliseconds: 20));
+
+    _print('Peer was connected');
   }
 
   /// Send text to remote peer. Call peer.connect() first to ensure
@@ -99,13 +112,15 @@ class Peer {
   sendText(String text) {
     var message = RTCDataChannelMessage(text);
     _dataChannel.send(message);
+    _print('Sent text message of length ${text.length}');
   }
 
   /// Send binary data to remote peer. Call peer.connect() first to ensure
   /// data channel is ready.
-  sendBinary(Uint8List bytes) {
+  sendBinary(Uint8List bytes) async {
     var message = RTCDataChannelMessage.fromBinary(bytes);
-    _dataChannel.send(message);
+    await _dataChannel.send(message);
+    _print('Sent binary message of size ${bytes.length}');
   }
 
   /// Call this method whenever signaling data is received from remote peer
@@ -126,6 +141,7 @@ class Peer {
       var type = messageData['type'];
       var description = RTCSessionDescription(sdp, type);
       _connection.setRemoteDescription(description);
+      _print('Remote description set');
       if (messageType == 'offer') {
         var answer = await _connection.createAnswer();
         await _connection.setLocalDescription(answer);
@@ -137,6 +153,8 @@ class Peer {
       var sdpMLineIndex = messageData['sdpMLineIndex'];
       var iceCandidate = RTCIceCandidate(candidate, sdpMid, sdpMLineIndex);
       await _connection.addCandidate(iceCandidate);
+      var type = candidate?.split(' ')[7];
+      _print('Ice candidate $type added');
     }
   }
 
@@ -146,5 +164,12 @@ class Peer {
       'data': data,
     });
     onSignal!.call(json);
+  }
+
+  _print(String log) {
+    if (kDebugMode && _verbose) {
+      var now = DateTime.now().millisecondsSinceEpoch;
+      print('simple_peer $now $log${_initiator ? ' (initiator)' : ''}');
+    }
   }
 }
