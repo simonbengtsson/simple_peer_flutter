@@ -26,6 +26,7 @@ class Peer {
   final bool _initiator;
   final bool _verbose;
   final Map<String, dynamic>? _config;
+  final RTCDataChannelInit? _dataChannelConfig;
 
   late RTCPeerConnection _connection;
   late RTCDataChannel _dataChannel;
@@ -52,9 +53,14 @@ class Peer {
   /// development it could get taken down at any moment and does not support
   /// the turn protocol. If transfer is not working you can turn on logging
   /// with the [verbose] option.
-  Peer({initiator = false, verbose = false, Map<String, dynamic>? config})
+  Peer(
+      {initiator = false,
+      verbose = false,
+      Map<String, dynamic>? config,
+      RTCDataChannelInit? dataChannelConfig})
       : _initiator = initiator,
         _config = config,
+        _dataChannelConfig = dataChannelConfig,
         _verbose = verbose {
     _print('Peer created');
   }
@@ -71,8 +77,8 @@ class Peer {
       _signaling('iceCandidate', candidate.toMap());
     };
 
+    var dcInit = _dataChannelConfig ?? RTCDataChannelInit();
     if (_initiator) {
-      var dcInit = RTCDataChannelInit();
       _dataChannel =
           await _connection.createDataChannel('simple_peer_dc', dcInit);
       _dataChannel.onDataChannelState = (state) async {
@@ -86,24 +92,42 @@ class Peer {
         } else {
           onTextData?.call(message.text);
         }
-        _print('Message received ');
+        _print('Message received');
       };
 
       var offer = await _connection.createOffer();
       await _connection.setLocalDescription(offer);
       _signaling('offer', offer.toMap());
     } else {
-      _connection.onDataChannel = (channel) {
-        _dataChannel = channel;
-        completer.complete();
-        channel.onMessage = (message) {
+      if (dcInit.negotiated) {
+        _dataChannel =
+            await _connection.createDataChannel('simple_peer_dc', dcInit);
+        _dataChannel.onDataChannelState = (state) async {
+          if (state == RTCDataChannelState.RTCDataChannelOpen) {
+            completer.complete();
+          }
+        };
+        _dataChannel.onMessage = (message) {
           if (message.isBinary) {
             onBinaryData?.call(message.binary);
           } else {
             onTextData?.call(message.text);
           }
+          _print('Message received');
         };
-      };
+      } else {
+        _connection.onDataChannel = (channel) {
+          _dataChannel = channel;
+          completer.complete();
+          channel.onMessage = (message) {
+            if (message.isBinary) {
+              onBinaryData?.call(message.binary);
+            } else {
+              onTextData?.call(message.text);
+            }
+          };
+        };
+      }
     }
 
     await completer.future;
