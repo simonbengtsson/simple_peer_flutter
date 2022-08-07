@@ -4,6 +4,7 @@ library simple_peer;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -33,8 +34,11 @@ class Peer {
   /// Be sure to set this before calling connect to avoid missing any events.
   Function(String)? onSignal;
 
-  /// Called when a data channel message was received from the remote peer
-  Function(String)? onData;
+  /// Called when text channel message was received from the remote peer
+  Function(String)? onTextData;
+
+  /// Called when binary channel message was received from the remote peer
+  Function(Uint8List)? onBinaryData;
 
   /// Creates a new Peer
   ///
@@ -58,13 +62,16 @@ class Peer {
       _dataChannel =
           await _connection.createDataChannel('simple_peer_dc', dcInit);
       _dataChannel.onDataChannelState = (state) async {
-        print('$_initiator Data channel state $state');
         if (state == RTCDataChannelState.RTCDataChannelOpen) {
           completer.complete();
         }
       };
       _dataChannel.onMessage = (message) {
-        onData!(message.text);
+        if (message.isBinary) {
+          onBinaryData?.call(message.binary);
+        } else {
+          onTextData?.call(message.text);
+        }
       };
 
       var offer = await _connection.createOffer();
@@ -75,20 +82,29 @@ class Peer {
         _dataChannel = channel;
         completer.complete();
         channel.onMessage = (message) {
-          print('Message ${message.text}');
-          onData!(message.text);
+          if (message.isBinary) {
+            onBinaryData?.call(message.binary);
+          } else {
+            onTextData?.call(message.text);
+          }
         };
       };
     }
 
-    print('$_initiator Waiting for data channel');
-
     await completer.future;
   }
 
-  /// Send data to remote peer. Call connect first to ensure data channel is ready.
-  send(String data) {
-    var message = RTCDataChannelMessage(data);
+  /// Send text to remote peer. Call peer.connect() first to ensure
+  /// data channel is ready.
+  sendText(String text) {
+    var message = RTCDataChannelMessage(text);
+    _dataChannel.send(message);
+  }
+
+  /// Send binary data to remote peer. Call peer.connect() first to ensure
+  /// data channel is ready.
+  sendBinary(Uint8List bytes) {
+    var message = RTCDataChannelMessage.fromBinary(bytes);
     _dataChannel.send(message);
   }
 
@@ -110,7 +126,6 @@ class Peer {
       var type = messageData['type'];
       var description = RTCSessionDescription(sdp, type);
       _connection.setRemoteDescription(description);
-      print('$_initiator Set $messageType');
       if (messageType == 'offer') {
         var answer = await _connection.createAnswer();
         await _connection.setLocalDescription(answer);

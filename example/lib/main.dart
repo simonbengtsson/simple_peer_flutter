@@ -48,13 +48,13 @@ class _AppState extends State<App> {
       await peer1.signal(data);
     };
 
-    peer2.onData = (data) async {
+    peer2.onTextData = (data) async {
       print("Got data from peer1: $data");
     };
 
     peer2.connect();
     await peer1.connect();
 
-    await peer1.send('hello!');
+    await peer1.sendText('hello!');
   }
 }
