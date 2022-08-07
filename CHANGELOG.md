@@ -1,3 +1,9 @@
+## 0.0.10
+- Add verbose option
+- Add webrtc config option
+- Add data channel config option
+- Improved documentation
+
 ## 0.0.9
 ## 0.0.8
 ## 0.0.7
