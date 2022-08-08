@@ -14,8 +14,11 @@ void main() {
 
 class Tester {
   testAll() async {
+    print('Running tests...');
     await testDataChannel();
     await testNegotiatedDataChannel();
+    await testDelayedConnection();
+    print('Done');
   }
 
   testDataChannel() async {
@@ -23,11 +26,11 @@ class Tester {
     testCompleter.future.timeout(const Duration(seconds: 5));
     print('Running testDataChannel...');
 
-    var peer1 = Peer(initiator: true);
-    var peer2 = Peer();
+    var peer1 = await Peer.create(initiator: true);
+    var peer2 = await Peer.create();
 
-    peer1.onSignal = (data) async {
-      await peer2.signal(data);
+    peer1.onSignal = (message) async {
+      await peer2.signal(message);
     };
 
     peer2.onSignal = (data) async {
@@ -61,8 +64,8 @@ class Tester {
     var config = RTCDataChannelInit();
     config.negotiated = true;
     config.id = 1000;
-    var peer1 = Peer(initiator: true, dataChannelConfig: config);
-    var peer2 = Peer(dataChannelConfig: config);
+    var peer1 = await Peer.create(initiator: true, dataChannelConfig: config);
+    var peer2 = await Peer.create(dataChannelConfig: config);
 
     peer1.onSignal = (data) async {
       await peer2.signal(data);
@@ -83,6 +86,37 @@ class Tester {
 
     await testCompleter.future;
     print('Completed testNegotiatedDataChannel');
+  }
+
+  testDelayedConnection() async {
+    var testCompleter = Completer();
+    testCompleter.future.timeout(const Duration(seconds: 5));
+    print('Running testDelayedConnection...');
+
+    var peer1 = await Peer.create(initiator: true);
+    var peer2 = await Peer.create();
+
+    peer1.onSignal = (data) async {
+      await Future.delayed(const Duration(seconds: 1));
+      await peer2.signal(data);
+    };
+
+    peer2.onSignal = (data) async {
+      await Future.delayed(const Duration(seconds: 1));
+      await peer1.signal(data);
+    };
+
+    peer2.onTextData = (data) async {
+      testCompleter.complete();
+    };
+
+    peer2.connect();
+    await peer1.connect();
+
+    await peer1.sendText('hello!');
+
+    await testCompleter.future;
+    print('Completed testDelayedConnection');
   }
 }
 
