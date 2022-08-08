@@ -49,6 +49,8 @@ class Peer {
 
   RTCDataChannel? _dataChannel;
 
+  final List<RTCIceCandidate> _pendingIceCandidates = [];
+
   /// Called when the peer wants to send signaling data to the remote peer.
   ///
   /// It is the responsibility of the application developer (that's you!) to
@@ -99,13 +101,43 @@ class Peer {
     return Peer._init(connection, initiator, verbose, dataChannelConfig);
   }
 
+  postIceCandidates() async {
+    var pending = [..._pendingIceCandidates];
+    _pendingIceCandidates.clear();
+
+    var local = await connection.getLocalDescription();
+    var remote = await connection.getRemoteDescription();
+
+    // Don't send ice candidates until both offer and answer is set
+    // This is mainly to simplify for clients so they don't have to handle the
+    // case of ice candidates getting received before offer on non initiator.
+    if (local != null && remote != null) {
+      for (var candidate in pending) {
+        var type = _initiator ? 'senderIceCandidate' : 'receiverIceCandidate';
+        await _signaling(type, candidate.toMap());
+      }
+    } else {
+      _pendingIceCandidates.addAll(pending);
+    }
+  }
+
+  _notifyDataMessages(RTCDataChannelMessage message) async {
+    if (message.isBinary) {
+      _print('Binary message received');
+      await onBinaryData?.call(message.binary);
+    } else {
+      _print('Text message received');
+      await onTextData?.call(message.text);
+    }
+  }
+
   /// Call to start connection to remote peer.
   Future connect() async {
     var completer = Completer();
 
     connection.onIceCandidate = (candidate) async {
-      var type = _initiator ? 'senderIceCandidate' : 'receiverIceCandidate';
-      _signaling(type, candidate.toMap());
+      _pendingIceCandidates.add(candidate);
+      await postIceCandidates();
     };
 
     var dcInit = _dataChannelConfig ?? RTCDataChannelInit();
@@ -118,12 +150,7 @@ class Peer {
         }
       };
       _dataChannel!.onMessage = (message) {
-        if (message.isBinary) {
-          onBinaryData?.call(message.binary);
-        } else {
-          onTextData?.call(message.text);
-        }
-        _print('Message received');
+        _notifyDataMessages(message);
       };
 
       var offer = await connection.createOffer();
@@ -139,23 +166,14 @@ class Peer {
           }
         };
         _dataChannel!.onMessage = (message) {
-          if (message.isBinary) {
-            onBinaryData?.call(message.binary);
-          } else {
-            onTextData?.call(message.text);
-          }
-          _print('Message received');
+          _notifyDataMessages(message);
         };
       } else {
         connection.onDataChannel = (channel) {
           _dataChannel = channel;
           completer.complete();
           channel.onMessage = (message) {
-            if (message.isBinary) {
-              onBinaryData?.call(message.binary);
-            } else {
-              onTextData?.call(message.text);
-            }
+            _notifyDataMessages(message);
           };
         };
       }
@@ -207,8 +225,9 @@ class Peer {
       if (info.isOffer) {
         var answer = await connection.createAnswer();
         await connection.setLocalDescription(answer);
-        _signaling('answer', answer.toMap());
+        await _signaling('answer', answer.toMap());
       }
+      await postIceCandidates();
     } else if (info.isIceCandidate) {
       var candidate = payload['candidate'];
       var sdpMid = payload['sdpMid'];
@@ -228,7 +247,7 @@ class Peer {
   _print(String log) {
     if (kDebugMode && _verbose) {
       var now = DateTime.now().millisecondsSinceEpoch;
-      print('simple_peer $now $log${_initiator ? ' (initiator)' : ''}');
+      print('simple_peer $now $log (i: $_initiator)');
     }
   }
 }
