@@ -35,8 +35,8 @@ class _AppState extends State<App> {
 
   reconnect() async {
     print('Connecting...');
-    var peer1 = Peer(initiator: true, verbose: true);
-    var peer2 = Peer(verbose: true);
+    var peer1 = await Peer.create(initiator: true);
+    var peer2 = await Peer.create();
 
     peer1.onSignal = (data) async {
       // when peer1 has signaling data, give it to peer2 somehow
