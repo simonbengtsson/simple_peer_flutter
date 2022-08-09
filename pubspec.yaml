@@ -1,6 +1,6 @@
 name: simple_peer
 description: Simple WebRTC. Similar to the simple-peer project in javascript.
-version: 0.0.9
+version: 0.0.10
 repository: https://github.com/simonbengtsson/simple_peer_flutter
 
 environment:
