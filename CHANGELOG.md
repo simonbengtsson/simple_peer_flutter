@@ -1,5 +1,5 @@
 ## 0.0.10
-- Add signal data instead of
+- Use signal info class instead of string
 - Add verbose option
 - Add webrtc config option
 - Add data channel config option
