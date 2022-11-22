@@ -4,7 +4,7 @@ IMPORTANT: Right now this library only supports data channels (and not media). C
 
 ## Getting started
 
-Read more about webrtc in [flutter_webrtc](https://github.com/flutter-webrtc/flutter-webrtc) or [simple-peer](https://github.com/feross/simple-peer)
+Read more about how to get started with webrtc in [flutter_webrtc](https://github.com/flutter-webrtc/flutter-webrtc) or the javascript [simple-peer](https://github.com/feross/simple-peer)
 
 ## Roadmap
 
