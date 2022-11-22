@@ -4,7 +4,7 @@ IMPORTANT: Right now this library only supports data channels (and not media). C
 
 ## Getting started
 
-For now, see more information on how to in either flutter_webrtc or simple-peer.
+Read more about webrtc in [flutter_webrtc](https://github.com/flutter-webrtc/flutter-webrtc) or [simple-peer](https://github.com/feross/simple-peer)
 
 ## Roadmap
 
@@ -18,17 +18,19 @@ var peer1 = Peer(initiator: true);
 var peer2 = Peer();
 
 peer1.onSignal = (data) async {
-  // when peer1 has signaling data, give it to peer2 somehow
+  // When peer1 has signaling data, give it to peer2 somehow
+  // https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Signaling_and_video_calling#the_signaling_server
   await peer2.signal(data);
 };
 
 peer2.onSignal = (data) async {
-  // when peer2 has signaling data, give it to peer1 somehow
+  // When peer2 has signaling data, give it to peer1 somehow
+  // https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Signaling_and_video_calling#the_signaling_server
   await peer1.signal(data);
 };
 
 peer2.onData = (data) async {
-  print("Got data from peer1: $data");
+  print(data); // hello!
 };
 
 peer2.connect();
