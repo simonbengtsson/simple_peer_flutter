@@ -4,7 +4,6 @@ library simple_peer;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -92,8 +91,8 @@ class Peer {
   /// the turn protocol. If transfer is not working you can turn on logging
   /// with the [verbose] option.
   static Future<Peer> create(
-      {initiator = false,
-      verbose = false,
+      {bool initiator = false,
+      bool verbose = false,
       Map<String, dynamic>? config,
       RTCDataChannelInit? dataChannelConfig}) async {
     var conf = config ?? _googleStunConfig;
@@ -132,7 +131,7 @@ class Peer {
   }
 
   /// Call to start connection to remote peer.
-  Future connect() async {
+  connect() async {
     var completer = Completer();
 
     connection.onIceCandidate = (candidate) async {
@@ -217,8 +216,8 @@ class Peer {
     var payload = info.payload;
 
     if (info.isOffer || info.isAnswer) {
-      var sdp = payload['sdp'];
-      var type = payload['type'];
+      var sdp = payload['sdp'] as String?;
+      var type = payload['type'] as String?;
       var description = RTCSessionDescription(sdp, type);
       connection.setRemoteDescription(description);
       _print('Remote description set');
@@ -229,9 +228,9 @@ class Peer {
       }
       await postIceCandidates();
     } else if (info.isIceCandidate) {
-      var candidate = payload['candidate'];
-      var sdpMid = payload['sdpMid'];
-      var sdpMLineIndex = payload['sdpMLineIndex'];
+      var candidate = payload['candidate'] as String?;
+      var sdpMid = payload['sdpMid'] as String?;
+      var sdpMLineIndex = payload['sdpMLineIndex'] as int?;
       var iceCandidate = RTCIceCandidate(candidate, sdpMid, sdpMLineIndex);
       await connection.addCandidate(iceCandidate);
       var type = candidate?.split(' ')[7];

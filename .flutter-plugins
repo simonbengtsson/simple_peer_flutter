@@ -1,9 +1,7 @@
 # This is a generated file; do not edit or check into version control.
-flutter_webrtc=/Users/simon/.pub-cache/hosted/pub.dartlang.org/flutter_webrtc-0.9.1/
-integration_test=/Users/simon/.pub-cache/hosted/pub.dartlang.org/integration_test-0.8.1/
-path_provider=/Users/simon/.pub-cache/hosted/pub.dartlang.org/path_provider-2.0.11/
-path_provider_android=/Users/simon/.pub-cache/hosted/pub.dartlang.org/path_provider_android-2.0.17/
-path_provider_ios=/Users/simon/.pub-cache/hosted/pub.dartlang.org/path_provider_ios-2.0.11/
-path_provider_linux=/Users/simon/.pub-cache/hosted/pub.dartlang.org/path_provider_linux-2.1.7/
-path_provider_macos=/Users/simon/.pub-cache/hosted/pub.dartlang.org/path_provider_macos-2.0.6/
-path_provider_windows=/Users/simon/.pub-cache/hosted/pub.dartlang.org/path_provider_windows-2.1.1/
+flutter_webrtc=/Users/simon/.pub-cache/hosted/pub.dev/flutter_webrtc-0.9.34/
+path_provider=/Users/simon/.pub-cache/hosted/pub.dev/path_provider-2.0.15/
+path_provider_android=/Users/simon/.pub-cache/hosted/pub.dev/path_provider_android-2.0.27/
+path_provider_foundation=/Users/simon/.pub-cache/hosted/pub.dev/path_provider_foundation-2.2.3/
+path_provider_linux=/Users/simon/.pub-cache/hosted/pub.dev/path_provider_linux-2.1.11/
+path_provider_windows=/Users/simon/.pub-cache/hosted/pub.dev/path_provider_windows-2.1.7/

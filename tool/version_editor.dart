@@ -22,8 +22,8 @@ class VersionEditor {
 
     runLocalCommand('git reset');
     runLocalCommand('git add ${pubspecFile.path} ${changelogFile.path}');
-    runLocalCommand('git commit -m v${newVersion}');
-    runLocalCommand('git tag v${newVersion}');
+    runLocalCommand('git commit -m v$newVersion');
+    runLocalCommand('git tag v$newVersion');
     runLocalCommand('git push && git push --tags');
 
     print(newVersion);

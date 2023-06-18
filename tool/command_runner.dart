@@ -1,6 +1,6 @@
 import 'dart:io';
 
-ProcessResult runLocalCommand(String commandStr, [silent = false]) {
+ProcessResult runLocalCommand(String commandStr, [bool silent = false]) {
   if (!silent) print('Running: $commandStr');
   var result = Process.runSync('/bin/zsh', ['-c', commandStr]);
 
