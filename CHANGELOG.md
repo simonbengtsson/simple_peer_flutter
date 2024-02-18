@@ -1,3 +1,7 @@
+## 0.0.14
+
+- Minor dependency updates
+
 ## 0.0.13
 
 - Dart 3 and other code improvements

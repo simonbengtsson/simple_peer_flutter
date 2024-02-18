@@ -38,3 +38,7 @@ await peer1.connect();
 
 await peer1.send('hello!');
 ```
+
+## Release
+
+
