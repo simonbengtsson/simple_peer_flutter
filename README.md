@@ -39,7 +39,7 @@ await peer1.connect();
 await peer1.send('hello!');
 ```
 
-## Release guid (for contributors)
+## Release guide (for contributors)
 
 - Update CHANGELOG.md + pubspec.yml version
 - Run `flutter pub publish`
