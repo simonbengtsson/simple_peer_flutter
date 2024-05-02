@@ -41,5 +41,6 @@ await peer1.send('hello!');
 
 ## Release guide (for contributors)
 
+- Test by opening example and check logs that it works
 - Update CHANGELOG.md + pubspec.yml version
 - Run `flutter pub publish`
