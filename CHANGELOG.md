@@ -1,3 +1,7 @@
+## 0.1.0
+
+- Upgrade flutter-webrtc to 0.10
+
 ## 0.0.14
 
 - Minor dependency updates
