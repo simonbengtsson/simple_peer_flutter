@@ -37,7 +37,7 @@ await peer1.connect();
 await peer1.send('hello!');
 ```
 
-# Example
+## Example
 
 Run the example/main.dart application and check that connection worked in console.
 
