@@ -1,3 +1,7 @@
+## 1.0.0
+
+- Upgrade flutter-webrtc to 0.11. No breaking changes known, but marking library as stable.
+
 ## 0.1.0
 
 - Upgrade flutter-webrtc to 0.10

@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 library simple_peer;
 
 import 'dart:async';

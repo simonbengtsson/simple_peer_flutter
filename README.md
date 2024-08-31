@@ -1,15 +1,13 @@
 Simple WebRTC. Wraps [flutter_webrtc](https://github.com/flutter-webrtc/flutter-webrtc) similar to [simple-peer](https://github.com/feross/simple-peer)
 
-IMPORTANT: Right now this library only supports data channels (and not media). Contributions welcome!
-
 ## Getting started
 
 Read more about how to get started with webrtc in [flutter_webrtc](https://github.com/flutter-webrtc/flutter-webrtc) or the javascript [simple-peer](https://github.com/feross/simple-peer)
 
-## Roadmap
+## Currently unsupported features (contributions welcome!)
 
-- Support media (in addition to currently supported data channels)
-- Support batching large data (such as sending files byte by byte)
+- Media channels (only data channels supported right now)
+- Batching of large data ie such as sending files byte by byte (needs to be handled in calling application right now)
 
 ## Usage
 
@@ -38,6 +36,10 @@ await peer1.connect();
 
 await peer1.send('hello!');
 ```
+
+# Example
+
+Run the example/main.dart application and check that connection worked in console.
 
 ## Release guide (for contributors)
 
