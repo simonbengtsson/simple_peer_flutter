@@ -53,10 +53,10 @@ packages:
     dependency: transitive
     description:
       name: dart_webrtc
-      sha256: ac7ef077084b3e54004716f1d736fcd839e1b60bc3f21f4122a35a9bb5ca2e47
+      sha256: c664ad88d5646735753add421ee2118486c100febef5e92b7f59cdbabf6a51f6
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.8"
+    version: "1.4.9"
   fake_async:
     dependency: transitive
     description:
@@ -95,10 +95,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_webrtc
-      sha256: "67faa07cf49392b50b1aa14590a83caa64d2109345fabd29899dcd8da8538348"
+      sha256: f6800cc2af79018c12e955ddf8ad007891fdfbb8199b0ce3dccd0977ed2add9c
       url: "https://pub.dev"
     source: hosted
-    version: "0.11.6+hotfix.1"
+    version: "0.11.7"
   js:
     dependency: transitive
     description:
@@ -265,7 +265,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.1.0"
+    version: "1.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -347,10 +347,10 @@ packages:
     dependency: transitive
     description:
       name: web
-      sha256: "97da13628db363c635202ad97068d47c5b8aa555808e7a9411963c533b449b27"
+      sha256: d43c1d6b787bf0afad444700ae7f4db8827f701bc61c255ac8d328c6f4d52062
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.1"
+    version: "1.0.0"
   webrtc_interface:
     dependency: transitive
     description:
