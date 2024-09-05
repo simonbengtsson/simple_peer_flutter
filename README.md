@@ -45,4 +45,5 @@ Run the example/main.dart application and check that connection worked in consol
 
 - Test by opening example and check logs that it works
 - Update CHANGELOG.md + pubspec.yml version
-- Run `flutter pub publish`
+- git tag vX.X.X and git push --tags
+- Run `flutter pub publish` and create Github release https://github.com/simonbengtsson/simple_peer_flutter/releases/new
